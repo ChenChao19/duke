@@ -1,0 +1,3 @@
+[D][✘] return book (by: 6th Jan)
+[T][✘] buy bread
+[E][✘] Seminar (at: 4th-8th Jan)

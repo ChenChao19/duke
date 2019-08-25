@@ -1,9 +1,17 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Duke {
+    private static String pathName = "D:/Desktop/duke/src/main/";
+    private static List<Task> list = new ArrayList<>();
     public static void main(String[] args) {
+        readingFile();
         String logo = " ____        _        \n"
                 + "|  _ \\ _   _| | _____ \n"
                 + "| | | | | | | |/ / _ \\\n"
@@ -12,7 +20,6 @@ public class Duke {
         System.out.println("Hello from\n" + logo);
         System.out.println("Hello! I'm Duke");
         System.out.println("What can I do for you?");
-        List<Task> list = new ArrayList<>();
         Scanner in = new Scanner(System.in);
         int task_counter = 0;
         while (true) {
@@ -36,6 +43,7 @@ public class Duke {
                         if (split[1].startsWith(" ") || split[1].length() == 0) throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
                         Task todo_temp = new Todos(split[1]);
                         list.add(todo_temp);
+                        addToFile(todo_temp);
                         task_counter++;
                         System.out.println("Got it, I have added this task:");
                         System.out.println(todo_temp.toString());
@@ -51,6 +59,7 @@ public class Duke {
                         String[] event_split = split[1].split(" /at "); //remove /at from the rest
                         Task event_temp = new Event(event_split[0], event_split[1]);
                         list.add(event_temp);
+                        addToFile(event_temp);
                         task_counter++;
                         System.out.println("Got it, I have added this task:");
                         System.out.println(event_temp.toString());
@@ -65,6 +74,7 @@ public class Duke {
                     String[] deadline_split = split[1].split(" /by ");
                     Task deadline_temp = new Deadline(deadline_split[0], deadline_split[1]);
                     list.add(deadline_temp);
+                    addToFile(deadline_temp);
                     task_counter++;
                     System.out.println("Got it, I have added this task:");
                     System.out.println(deadline_temp.toString());
@@ -73,6 +83,7 @@ public class Duke {
                     String[] split = input.split(" ", 2);
                     int value = Integer.parseInt(split[1]);
                     list.get(value - 1).Done();
+                    updateFile();
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println("[" + list.get(value - 1).getStatusIcon() + "] " + list.get(value - 1).description);
                 } else {
@@ -84,4 +95,57 @@ public class Duke {
         }
         System.out.println("Bye. Hope to see you again soon!");
     }
+
+    private static void addToFile(Task task) {
+        File saveFile = new File(pathName + "duke.txt");
+        try {
+            FileWriter fileWriter = new FileWriter(saveFile, true);
+            fileWriter.write(task.toString() + "\n");
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void updateFile() {
+        File saveFile = new File(pathName + "duke.txt");
+        try{
+            FileWriter fileWriter = new FileWriter(saveFile, false);
+            for(Task task : list) {
+                fileWriter.write(task.toString() + " \n");
+            }
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void readingFile(){
+        File file = new File(pathName + "duke.txt");
+        if(file.exists()) {
+            try{
+                List<String> temp = Files.lines(file.toPath()).collect(Collectors.toList());
+                for(String string : temp) {
+                    Task curr;
+                    if (string.contains("[T]")) {
+                        curr = new Todos(string.substring(7));
+                    } else if (string.contains("[D]")) {
+                        curr = new Deadline(string.substring(7, string.indexOf("(by: ") - 1), string.substring(string.indexOf("(by: ") + 5, string.length() - 1));
+                    } else { // contains "[E]"
+                        curr = new Event(string.substring(7, string.indexOf("(at: ") - 1), string.substring(string.indexOf("(at: ") + 5, string.length() - 1));
+                    }
+
+                    if(string.contains("[✓]")) {
+                        curr.Done();
+                    }
+
+                    list.add(curr);
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
 }
