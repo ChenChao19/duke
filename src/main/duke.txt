@@ -1,2 +1,1 @@
-[D][✘] return book (by: 6/1/1972 1800)
-[D][✘] buy bread (by: 5/1/1986 1600)
+[D][✓] return bread (by: 6/12/1997 1800) 

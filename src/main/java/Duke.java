@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 public class Duke {
     private static String pathName = "D:/Desktop/duke/src/main/";
     private static List<Task> list = new ArrayList<>();
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
     public static void main(String[] args) {
         readingFile();
         String logo = " ____        _        \n"
@@ -81,6 +80,7 @@ public class Duke {
                         throw new DukeException("☹ OOPS!!! The description of a deadline cannot be empty.");
                     String[] deadline_split = split[1].split(" /by ");
 
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
                     LocalDateTime formatDateTime = LocalDateTime.parse(deadline_split[1], formatter);
                     Task deadline_temp = new Deadline(deadline_split[0], formatDateTime);
 
@@ -98,7 +98,6 @@ public class Duke {
                     System.out.println("[" + list.get(value - 1).getStatusIcon() + "] " + list.get(value - 1).description);
                 } else {
                     throw new DukeException("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
-                    //
                 }
             } catch (DateTimeParseException e) {
                 System.out.println("Please enter in the format d/M/yyyy/ HHmm");
@@ -143,7 +142,8 @@ public class Duke {
                     if (string.contains("[T]")) {
                         curr = new Todos(string.substring(7));
                     } else if (string.contains("[D]")) {
-                        LocalDateTime temp_LocalDateTime = LocalDateTime.parse(string.substring(string.indexOf("(by: ") + 5, string.length() - 1), formatter);
+                        DateTimeFormatter temp_formatter = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
+                        LocalDateTime temp_LocalDateTime = LocalDateTime.parse(string.substring(string.indexOf("(by: ") + 5, string.indexOf(")", string.length() - 2)), temp_formatter);
                         curr = new Deadline(string.substring(7, string.indexOf("(by: ") - 1), temp_LocalDateTime);
                     } else { // contains "[E]"
                         curr = new Event(string.substring(7, string.indexOf("(at: ") - 1), string.substring(string.indexOf("(at: ") + 5, string.length() - 1));
