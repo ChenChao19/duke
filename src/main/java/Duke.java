@@ -98,6 +98,7 @@ public class Duke {
                     System.out.println("[" + list.get(value - 1).getStatusIcon() + "] " + list.get(value - 1).description);
                 } else {
                     throw new DukeException("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
+                    //
                 }
             } catch (DateTimeParseException e) {
                 System.out.println("Please enter in the format d/M/yyyy/ HHmm");
