@@ -2,14 +2,18 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Duke {
     private static String pathName = "D:/Desktop/duke/src/main/";
     private static List<Task> list = new ArrayList<>();
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
     public static void main(String[] args) {
         readingFile();
         String logo = " ____        _        \n"
@@ -21,14 +25,14 @@ public class Duke {
         System.out.println("Hello! I'm Duke");
         System.out.println("What can I do for you?");
         Scanner in = new Scanner(System.in);
-        int task_counter = 0;
         while (true) {
-            try{
+            try {
                 String input = in.nextLine();
-                if(input.length() == 0 | input.startsWith(" ")) throw new DukeException("☹ OOPS!!! The task cannot be is empty!");
-                if(input.startsWith("bye")) {
+                if (input.length() == 0 | input.startsWith(" "))
+                    throw new DukeException("☹ OOPS!!! The task cannot be is empty!");
+                if (input.startsWith("bye")) {
                     break;
-                } else if(input.startsWith("list")) {
+                } else if (input.startsWith("list")) {
                     if (list.isEmpty()) {
                         System.out.println("☹ OOPS!!! The list is empty!");
                     } else {
@@ -36,50 +40,56 @@ public class Duke {
                             System.out.println(i + 1 + "." + list.get(i));
                         }
                     }
-                } else if(input.startsWith("todo")) {
+                } else if (input.startsWith("todo")) {
                     try {
-                        if (input.equals("todo")) throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
+                        if (input.equals("todo"))
+                            throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
                         String[] split = input.split(" ", 2);
-                        if (split[1].startsWith(" ") || split[1].length() == 0) throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
+                        if (split[1].startsWith(" ") || split[1].length() == 0)
+                            throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
                         Task todo_temp = new Todos(split[1]);
                         list.add(todo_temp);
                         addToFile(todo_temp);
-                        task_counter++;
                         System.out.println("Got it, I have added this task:");
                         System.out.println(todo_temp.toString());
-                        System.out.println("Now you have " + task_counter + " tasks in the list.");
+                        System.out.println("Now you have " + list.size() + " tasks in the list.");
                     } catch (DukeException e) {
                         System.out.println(e.getMessage());
                     }
-                } else if(input.startsWith("event")) {
+                } else if (input.startsWith("event")) {
                     try {
-                        if (input.equals("event")) throw new DukeException("☹ OOPS!!! The description of a event cannot be empty.");
+                        if (input.equals("event"))
+                            throw new DukeException("☹ OOPS!!! The description of a event cannot be empty.");
                         String[] split = input.split(" ", 2); //remove event from the rest
-                        if (split[1].startsWith(" ") || split[1].length() == 0) throw new DukeException("☹ OOPS!!! The description of a event cannot be empty.");
+                        if (split[1].startsWith(" ") || split[1].length() == 0)
+                            throw new DukeException("☹ OOPS!!! The description of a event cannot be empty.");
                         String[] event_split = split[1].split(" /at "); //remove /at from the rest
                         Task event_temp = new Event(event_split[0], event_split[1]);
                         list.add(event_temp);
                         addToFile(event_temp);
-                        task_counter++;
                         System.out.println("Got it, I have added this task:");
                         System.out.println(event_temp.toString());
-                        System.out.println("Now you have " + task_counter + " tasks in the list.");
+                        System.out.println("Now you have " + list.size() + " tasks in the list.");
                     } catch (DukeException e) {
                         System.out.println(e.getMessage());
                     }
-                } else if(input.startsWith("deadline")) {
-                    if (input.equals("deadline")) throw new DukeException("☹ OOPS!!! The description of a deadline cannot be empty.");
+                } else if (input.startsWith("deadline")) {
+                    if (input.equals("deadline"))
+                        throw new DukeException("☹ OOPS!!! The description of a deadline cannot be empty.");
                     String[] split = input.split(" ", 2);
-                    if (split[1].startsWith(" ") || split[1].length() == 0) throw new DukeException("☹ OOPS!!! The description of a deadline cannot be empty.");
+                    if (split[1].startsWith(" ") || split[1].length() == 0)
+                        throw new DukeException("☹ OOPS!!! The description of a deadline cannot be empty.");
                     String[] deadline_split = split[1].split(" /by ");
-                    Task deadline_temp = new Deadline(deadline_split[0], deadline_split[1]);
+
+                    LocalDateTime formatDateTime = LocalDateTime.parse(deadline_split[1], formatter);
+                    Task deadline_temp = new Deadline(deadline_split[0], formatDateTime);
+
                     list.add(deadline_temp);
                     addToFile(deadline_temp);
-                    task_counter++;
                     System.out.println("Got it, I have added this task:");
                     System.out.println(deadline_temp.toString());
-                    System.out.println("Now you have " + task_counter + " tasks in the list.");
-                } else if(input.startsWith("done")) {
+                    System.out.println("Now you have " + list.size() + " tasks in the list.");
+                } else if (input.startsWith("done")) {
                     String[] split = input.split(" ", 2);
                     int value = Integer.parseInt(split[1]);
                     list.get(value - 1).Done();
@@ -89,6 +99,8 @@ public class Duke {
                 } else {
                     throw new DukeException("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }
+            } catch (DateTimeParseException e) {
+                System.out.println("Please enter in the format d/M/yyyy/ HHmm");
             } catch (DukeException e) {
                 System.out.println(e.getMessage());
             }
@@ -130,7 +142,8 @@ public class Duke {
                     if (string.contains("[T]")) {
                         curr = new Todos(string.substring(7));
                     } else if (string.contains("[D]")) {
-                        curr = new Deadline(string.substring(7, string.indexOf("(by: ") - 1), string.substring(string.indexOf("(by: ") + 5, string.length() - 1));
+                        LocalDateTime temp_LocalDateTime = LocalDateTime.parse(string.substring(string.indexOf("(by: ") + 5, string.length() - 1), formatter);
+                        curr = new Deadline(string.substring(7, string.indexOf("(by: ") - 1), temp_LocalDateTime);
                     } else { // contains "[E]"
                         curr = new Event(string.substring(7, string.indexOf("(at: ") - 1), string.substring(string.indexOf("(at: ") + 5, string.length() - 1));
                     }

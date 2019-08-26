@@ -1,3 +1,2 @@
-[D][✘] return book (by: 6th Jan)
-[T][✘] buy bread
-[E][✘] Seminar (at: 4th-8th Jan)
+[D][✘] return book (by: 6/1/1972 1800)
+[D][✘] buy bread (by: 5/1/1986 1600)
