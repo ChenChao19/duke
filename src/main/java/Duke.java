@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Duke {
     private static String pathName = "D:/Desktop/duke/src/main/";
-    private static List<Task> list = new ArrayList<>();
+    private static ArrayList<Task> list = new ArrayList<>();
     public static void main(String[] args) {
         readingFile();
         String logo = " ____        _        \n"
@@ -96,6 +96,15 @@ public class Duke {
                     updateFile();
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println("[" + list.get(value - 1).getStatusIcon() + "] " + list.get(value - 1).description);
+                } else if(input.startsWith("delete")) {
+                    String[] split = input.split(" ", 2);
+                    int value = Integer.parseInt(split[1]);
+                    Task temp = list.get(value - 1);
+                    list.remove(value - 1);
+                    updateFile();
+                    System.out.println("Noted. I've removed this task: ");
+                    System.out.println(temp);
+                    System.out.println("Now you have " + list.size() + " tasks in the list.");
                 } else {
                     throw new DukeException("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }
