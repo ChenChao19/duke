@@ -1,0 +1,3 @@
+[T][✓] return book 
+[T][✓] buy book 
+[T][✘] buy and return book 

@@ -96,7 +96,7 @@ public class Duke {
                     updateFile();
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println("[" + list.get(value - 1).getStatusIcon() + "] " + list.get(value - 1).description);
-                } else if(input.startsWith("delete")) {
+                } else if (input.startsWith("delete")) {
                     String[] split = input.split(" ", 2);
                     int value = Integer.parseInt(split[1]);
                     Task temp = list.get(value - 1);
@@ -105,9 +105,25 @@ public class Duke {
                     System.out.println("Noted. I've removed this task: ");
                     System.out.println(temp);
                     System.out.println("Now you have " + list.size() + " tasks in the list.");
+                } else if (input.startsWith("find")) {
+                    String[] split = input.split(" ", 2);
+                    int index = 1;
+                    boolean flag = false;
+                    System.out.println(("Here are the matching tasks in your list:"));
+                    for (Task i : list) {
+                        if (i.description.contains(split[1])) {
+                            System.out.print(index + ".");
+                            System.out.println(i.toString());
+                            flag = true;
+                        }
+                        index++;
+                    }
+                    if (!flag) throw new DukeException("☹ OOPS!!! Cannot find any Task containing " + split[1]);
                 } else {
                     throw new DukeException("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
             } catch (DateTimeParseException e) {
                 System.out.println("Please enter in the format d/M/yyyy/ HHmm");
             } catch (DukeException e) {
