@@ -1,190 +1,31 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Duke {
-    private static String pathName = "D:/Desktop/duke/src/main/";
-    private static ArrayList<Task> list = new ArrayList<>();
+    static ArrayList<Task> list = new ArrayList<>();
+    static Storage storage;
+    static Ui ui;
+
     public static void main(String[] args) {
-        readingFile();
-        String logo = " ____        _        \n"
-                + "|  _ \\ _   _| | _____ \n"
-                + "| | | | | | | |/ / _ \\\n"
-                + "| |_| | |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
-        System.out.println("Hello from\n" + logo);
-        System.out.println("Hello! I'm Duke");
-        System.out.println("What can I do for you?");
+        storage = new Storage("D:/Desktop/duke/src/main/");
+        ui = new Ui();
+        storage.readingFile();
+        ui.DukeInitialize();
         Scanner in = new Scanner(System.in);
         while (true) {
             try {
                 String input = in.nextLine();
-                if (input.length() == 0 | input.startsWith(" "))
-                    throw new DukeException("☹ OOPS!!! The task cannot be is empty!");
-                if (input.startsWith("bye")) {
-                    break;
-                } else if (input.startsWith("list")) {
-                    if (list.isEmpty()) {
-                        System.out.println("☹ OOPS!!! The list is empty!");
-                    } else {
-                        for (int i = 0; i < list.size(); i++) {
-                            System.out.println(i + 1 + "." + list.get(i));
-                        }
-                    }
-                } else if (input.startsWith("todo")) {
-                    try {
-                        if (input.equals("todo"))
-                            throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
-                        String[] split = input.split(" ", 2);
-                        if (split[1].startsWith(" ") || split[1].length() == 0)
-                            throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
-                        Task todo_temp = new Todos(split[1]);
-                        list.add(todo_temp);
-                        addToFile(todo_temp);
-                        System.out.println("Got it, I have added this task:");
-                        System.out.println(todo_temp.toString());
-                        System.out.println("Now you have " + list.size() + " tasks in the list.");
-                    } catch (DukeException e) {
-                        System.out.println(e.getMessage());
-                    }
-                } else if (input.startsWith("event")) {
-                    try {
-                        if (input.equals("event"))
-                            throw new DukeException("☹ OOPS!!! The description of a event cannot be empty.");
-                        String[] split = input.split(" ", 2); //remove event from the rest
-                        if (split[1].startsWith(" ") || split[1].length() == 0)
-                            throw new DukeException("☹ OOPS!!! The description of a event cannot be empty.");
-                        String[] event_split = split[1].split(" /at "); //remove /at from the rest
-                        Task event_temp = new Event(event_split[0], event_split[1]);
-                        list.add(event_temp);
-                        addToFile(event_temp);
-                        System.out.println("Got it, I have added this task:");
-                        System.out.println(event_temp.toString());
-                        System.out.println("Now you have " + list.size() + " tasks in the list.");
-                    } catch (DukeException e) {
-                        System.out.println(e.getMessage());
-                    }
-                } else if (input.startsWith("deadline")) {
-                    if (input.equals("deadline"))
-                        throw new DukeException("☹ OOPS!!! The description of a deadline cannot be empty.");
-                    String[] split = input.split(" ", 2);
-                    if (split[1].startsWith(" ") || split[1].length() == 0)
-                        throw new DukeException("☹ OOPS!!! The description of a deadline cannot be empty.");
-                    String[] deadline_split = split[1].split(" /by ");
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
-                    LocalDateTime formatDateTime = LocalDateTime.parse(deadline_split[1], formatter);
-                    Task deadline_temp = new Deadline(deadline_split[0], formatDateTime);
-
-                    list.add(deadline_temp);
-                    addToFile(deadline_temp);
-                    System.out.println("Got it, I have added this task:");
-                    System.out.println(deadline_temp.toString());
-                    System.out.println("Now you have " + list.size() + " tasks in the list.");
-                } else if (input.startsWith("done")) {
-                    String[] split = input.split(" ", 2);
-                    int value = Integer.parseInt(split[1]);
-                    list.get(value - 1).Done();
-                    updateFile();
-                    System.out.println("Nice! I've marked this task as done:");
-                    System.out.println("[" + list.get(value - 1).getStatusIcon() + "] " + list.get(value - 1).description);
-                } else if (input.startsWith("delete")) {
-                    String[] split = input.split(" ", 2);
-                    int value = Integer.parseInt(split[1]);
-                    Task temp = list.get(value - 1);
-                    list.remove(value - 1);
-                    updateFile();
-                    System.out.println("Noted. I've removed this task: ");
-                    System.out.println(temp);
-                    System.out.println("Now you have " + list.size() + " tasks in the list.");
-                } else if (input.startsWith("find")) {
-                    String[] split = input.split(" ", 2);
-                    int index = 1;
-                    boolean flag = false;
-                    System.out.println(("Here are the matching tasks in your list:"));
-                    for (Task i : list) {
-                        if (i.description.contains(split[1])) {
-                            System.out.print(index + ".");
-                            System.out.println(i.toString());
-                            flag = true;
-                        }
-                        index++;
-                    }
-                    if (!flag) throw new DukeException("☹ OOPS!!! Cannot find any Task containing " + split[1]);
-                } else {
-                    throw new DukeException("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
-                }
+                if(input.equals("bye")) break;
+                Parser.parse(input);
             } catch (ArrayIndexOutOfBoundsException e) {
-                System.out.println("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
+                ui.IDoNotUnderStand();
             } catch (DateTimeParseException e) {
-                System.out.println("Please enter in the format d/M/yyyy/ HHmm");
+                ui.DateFormatError();
             } catch (DukeException e) {
                 System.out.println(e.getMessage());
             }
         }
-        System.out.println("Bye. Hope to see you again soon!");
+        ui.DukeBye();
     }
-
-    private static void addToFile(Task task) {
-        File saveFile = new File(pathName + "duke.txt");
-        try {
-            FileWriter fileWriter = new FileWriter(saveFile, true);
-            fileWriter.write(task.toString() + "\n");
-            fileWriter.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private static void updateFile() {
-        File saveFile = new File(pathName + "duke.txt");
-        try{
-            FileWriter fileWriter = new FileWriter(saveFile, false);
-            for(Task task : list) {
-                fileWriter.write(task.toString() + " \n");
-            }
-            fileWriter.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private static void readingFile(){
-        File file = new File(pathName + "duke.txt");
-        if(file.exists()) {
-            try{
-                List<String> temp = Files.lines(file.toPath()).collect(Collectors.toList());
-                for(String string : temp) {
-                    Task curr;
-                    if (string.contains("[T]")) {
-                        curr = new Todos(string.substring(7));
-                    } else if (string.contains("[D]")) {
-                        DateTimeFormatter temp_formatter = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
-                        LocalDateTime temp_LocalDateTime = LocalDateTime.parse(string.substring(string.indexOf("(by: ") + 5, string.indexOf(")", string.length() - 2)), temp_formatter);
-                        curr = new Deadline(string.substring(7, string.indexOf("(by: ") - 1), temp_LocalDateTime);
-                    } else { // contains "[E]"
-                        curr = new Event(string.substring(7, string.indexOf("(at: ") - 1), string.substring(string.indexOf("(at: ") + 5, string.length() - 1));
-                    }
-
-                    if(string.contains("[✓]")) {
-                        curr.Done();
-                    }
-
-                    list.add(curr);
-                }
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
-
 }
