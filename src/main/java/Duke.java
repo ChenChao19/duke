@@ -1,23 +1,31 @@
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class Duke {
-    static ArrayList<Task> list = new ArrayList<>();
-    static Storage storage;
-    static Ui ui;
+    private Storage storage;
+    private Ui ui;
+    private TaskList list;
 
-    public static void main(String[] args) {
-        storage = new Storage("D:/Desktop/duke/src/main/");
+    public Duke() {
         ui = new Ui();
+        storage = new Storage("D:/Desktop/duke/src/main/");
         storage.readingFile();
+        list = new TaskList(storage.returnList());
+    }
+
+    public void run() {
         ui.DukeInitialize();
-        Scanner in = new Scanner(System.in);
         while (true) {
             try {
-                String input = in.nextLine();
-                if(input.equals("bye")) break;
-                Parser.parse(input);
+                Scanner in = new Scanner(System.in);
+                if(in.hasNextLine()) {
+                    String input = in.nextLine();
+                    Parser P = new Parser(storage, ui, list);
+                    if (input.equals("bye")) break;
+                    P.parse(input);
+                } else {
+                    break;
+                }
             } catch (ArrayIndexOutOfBoundsException e) {
                 ui.IDoNotUnderStand();
             } catch (DateTimeParseException e) {
@@ -27,5 +35,9 @@ public class Duke {
             }
         }
         ui.DukeBye();
+    }
+
+    public static void main(String[] args) {
+        new Duke().run();
     }
 }

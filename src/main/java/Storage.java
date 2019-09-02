@@ -4,14 +4,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Storage extends Duke {
-    private static String pathName;
+public class Storage {
+    private String pathName;
+    private ArrayList<Task> list = new ArrayList<>();
 
     public Storage(String filePath) {
         this.pathName = filePath;
+    }
+
+    public ArrayList<Task> returnList() {
+        return list;
     }
 
     void addToFile(Task task) {
