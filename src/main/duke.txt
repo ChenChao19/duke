@@ -1,4 +1,2 @@
-[T][✘] return book  
-[T][✘] return book  
-[T][✘] return book  
-[T][✘] return book 
+[T][✓] buy bread  
+[T][✓] return book 

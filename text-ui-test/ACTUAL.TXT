@@ -7,8 +7,5 @@ Hello from
 
 Hello! I'm Duke
 What can I do for you?
-1.[T][?] return book  
-2.[T][?] return book  
-3.[T][?] return book  
-4.[T][?] return book 
+1.[T][?] buy bread 
 Bye. Hope to see you again soon!
