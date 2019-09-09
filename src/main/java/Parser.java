@@ -1,17 +1,34 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ *This is the Parser Class
+ * Handles user input and executes the corresponding command
+ */
+
 public class Parser {
 
     private Storage storage;
     private Ui ui;
     private TaskList list;
 
-    public Parser(Storage temp1, Ui temp2, TaskList temp3) {
-        this.storage = temp1;
-        this.ui = temp2;
-        this.list = temp3;
+    /**
+     * This Constructor "Parser" instantiates the necessary variables to be used in Class "Parser"
+     * @param store This is the object that handles reading and writing of the Duke.txt file
+     * @param interact This is the object that handles the interaction with the User
+     * @param tasks This is the task lists that stores the tasks from the user
+     */
+
+    public Parser(Storage store, Ui interact, TaskList tasks) {
+        this.storage = store;
+        this.ui = interact;
+        this.list = tasks;
     }
+
+    /**
+     * This method "parse" is used to execute the correct command based on user input
+     * @param input This is the user command to be executed
+     */
 
     void parse(String input) throws DukeException{
         if (input.length() == 0 | input.startsWith(" ")) {

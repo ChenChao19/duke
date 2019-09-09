@@ -8,18 +8,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This is the Storage Class
+ * Saved data stored in TaskList
+ * Retrieves data saved in Duke.txt
+ * Repopulates TaskList with data retrieved from Duke.txt
+ */
+
 public class Storage {
     private String pathName;
     private ArrayList<Task> list = new ArrayList<>();
 
+
+    /**
+     * This Constructor "Storage" instantiates the necessary variables to be used in Class "Storage"
+     * @param filePath This is the filePath to Duke.txt
+     */
     public Storage(String filePath) {
         this.pathName = filePath;
     }
 
+    /**
+     * This method "returnList" is used to clone objects from TaskList to list
+     * @return ArrayList<Task> This is the ArrayList of objects to be cloned to List
+     */
     public ArrayList<Task> returnList() {
         return list;
     }
 
+    /**
+     * This method "writeFile" is used to write a String to Duke.txt
+     * @param task This is the tasks from the user that will be saved in Duke.txt
+     */
     void addToFile(Task task) {
         File saveFile = new File(pathName + "duke.txt");
         try {
@@ -31,6 +51,9 @@ public class Storage {
         }
     }
 
+    /**
+     * This method "updateFile" is used to update Duke.txt every time there is a change
+     */
     void updateFile() {
         File saveFile = new File(pathName + "duke.txt");
         try{
@@ -44,6 +67,10 @@ public class Storage {
         }
     }
 
+
+    /**
+     * This method "readingFile" is used to read data from Duke.txt
+     */
     void readingFile(){
         File file = new File(pathName + "duke.txt");
         if(file.exists()) {

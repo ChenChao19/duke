@@ -1,3 +1,7 @@
+/**
+ * This is the Ui Class
+ * contains message to interact with the user
+ */
 public class Ui {
 
     void DukeInitialize() {
